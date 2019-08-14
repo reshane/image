@@ -1,6 +1,7 @@
 use num_traits::{NumCast, Zero};
 use std::mem;
 use std::ops::{Index, IndexMut};
+use zerocopy::{AsBytes, FromBytes, LayoutVerified};
 
 use buffer::Pixel;
 use traits::Primitive;
@@ -65,12 +66,12 @@ macro_rules! define_colors {
 $( // START Structure definitions
 
 #[$doc]
-#[derive(PartialEq, Eq, Clone, Debug, Copy, Hash)]
+#[derive(PartialEq, Eq, Clone, Debug, Copy, Hash, FromBytes)]
 #[repr(C)]
 #[allow(missing_docs)]
 pub struct $ident<T: Primitive> (pub [T; $channels]);
 
-impl<T: Primitive + 'static> Pixel for $ident<T> {
+impl<T: Primitive> Pixel for $ident<T> {
 
     type Subpixel = T;
 
@@ -78,7 +79,7 @@ impl<T: Primitive + 'static> Pixel for $ident<T> {
 
     const COLOR_MODEL: &'static str = $interpretation;
 
-    const COLOR_TYPE: ColorType = ColorType::$color_type(mem::size_of::<T>() as u8 * 8); 
+    const COLOR_TYPE: ColorType = ColorType::$color_type(mem::size_of::<T>() as u8 * 8);
 
     #[inline(always)]
     fn channels(&self) -> &[T] {
@@ -101,10 +102,11 @@ impl<T: Primitive + 'static> Pixel for $ident<T> {
     }
 
     fn from_slice(slice: &[T]) -> &$ident<T> {
-        assert_eq!(slice.len(), $channels);
-        unsafe { &*(slice.as_ptr() as *const $ident<T>) }
+        LayoutVerified::<_, Self>::new(slice.as_bytes()).unwrap().into_ref()
     }
     fn from_slice_mut(slice: &mut [T]) -> &mut $ident<T> {
+        // TODO: Once zerocopy supports deriving AsBytes for types with type parameters, replace the
+        // following code with a safe version using `LayoutVerified::into_mut`.
         assert_eq!(slice.len(), $channels);
         unsafe { &mut *(slice.as_ptr() as *mut $ident<T>) }
     }

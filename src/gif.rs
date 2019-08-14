@@ -140,20 +140,20 @@ impl<R: Read> GifFrameIterator<R> {
                         // by background_color_option
                         Some(slice) => {
                             background_color.clone_from_slice(&slice[index..(index + 4)]);
-                            Rgba::from_slice(&background_color)
+                            Rgba::from_slice(&background_color).clone()
                         }
                         // if there is no global palette, assign the background color to be
                         // transparent
-                        None => Rgba::from_slice(&[0, 0, 0, 0]),
+                        None => Rgba([0, 0, 0, 0]),
                     }
                 }
                 // return a transparent background color
-                None => Rgba::from_slice(&[0, 0, 0, 0]),
+                None => Rgba([0, 0, 0, 0]),
             }
         };
 
         // create the background image to use later
-        let background_img = ImageBuffer::from_pixel(width, height, *background_pixel);
+        let background_img = ImageBuffer::from_pixel(width, height, background_pixel);
 
         // the background image is the first non disposed frame
         let non_disposed_frame = background_img.clone();

@@ -18,6 +18,7 @@ extern crate num_traits;
 extern crate scoped_threadpool;
 #[cfg(all(test, feature = "benchmarks"))]
 extern crate test;
+extern crate zerocopy;
 
 #[cfg(test)]
 #[macro_use]
@@ -57,7 +58,6 @@ pub use buffer::{ConvertBuffer,
 
 pub use flat::{FlatSamples};
 
-// Traits
 pub use traits::Primitive;
 
 // Opening and loading images

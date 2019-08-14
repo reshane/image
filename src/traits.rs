@@ -4,9 +4,10 @@
 
 use num_traits::{Bounded, Num, NumCast};
 use std::ops::AddAssign;
+use zerocopy::{AsBytes, FromBytes};
 
 /// Primitive trait from old stdlib
-pub trait Primitive: Copy + NumCast + Num + PartialOrd<Self> + Clone + Bounded {}
+pub trait Primitive: Copy + NumCast + Num + PartialOrd<Self> + Clone + Bounded + AsBytes + FromBytes + 'static {}
 
 impl Primitive for usize {}
 impl Primitive for u8 {}
