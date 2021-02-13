@@ -702,11 +702,6 @@ pub trait GenericImageView {
     /// The type of pixel.
     type Pixel: Pixel;
 
-    /// Underlying image type. This is mainly used by SubImages in order to
-    /// always have a reference to the original image. This allows for less
-    /// indirections and it eases the use of nested SubImages.
-    type InnerImageView: GenericImageView<Pixel = Self::Pixel>;
-
     /// The width and height of this image.
     fn dimensions(&self) -> (u32, u32);
 
@@ -767,24 +762,16 @@ pub trait GenericImageView {
         }
     }
 
-    /// Returns a reference to the underlying image.
-    fn inner(&self) -> &Self::InnerImageView;
-
     /// Returns an subimage that is an immutable view into this image.
     /// You can use [`GenericImage::sub_image`] if you need a mutable view instead.
     /// The coordinates set the position of the top left corner of the view.
-    fn view(&self, x: u32, y: u32, width: u32, height: u32) -> SubImage<&Self::InnerImageView> {
-        SubImage::new(self.inner(), x, y, width, height)
+    fn view(&self, x: u32, y: u32, width: u32, height: u32) -> SubImage<&Self> {
+        SubImage::new(self, x, y, width, height)
     }
 }
 
 /// A trait for manipulating images.
 pub trait GenericImage: GenericImageView {
-    /// Underlying image type. This is mainly used by SubImages in order to
-    /// always have a reference to the original image. This allows for less
-    /// indirections and it eases the use of nested SubImages.
-    type InnerImage: GenericImage<Pixel = Self::Pixel>;
-
     /// Gets a reference to the mutable pixel at location `(x, y)`. Indexed from top left.
     ///
     /// # Panics
@@ -894,8 +881,8 @@ pub trait GenericImage: GenericImageView {
         true
     }
 
-    /// Returns a mutable reference to the underlying image.
-    fn inner_mut(&mut self) -> &mut Self::InnerImage;
+    // /// Returns a mutable reference to the underlying image.
+    // fn inner_mut(&mut self) -> &mut Self::InnerImage;
 
     /// Returns a mutable subimage that is a view into this image.
     /// If you want an immutable subimage instead, use [`GenericImageView::view`]
@@ -906,8 +893,8 @@ pub trait GenericImage: GenericImageView {
         y: u32,
         width: u32,
         height: u32,
-    ) -> SubImage<&mut Self::InnerImage> {
-        SubImage::new(self.inner_mut(), x, y, width, height)
+    ) -> SubImage<&mut Self> {
+        SubImage::new(self, x, y, width, height)
     }
 }
 
@@ -970,6 +957,16 @@ impl<I> SubImage<I> {
 
         out
     }
+
+    /// Returns a reference to the underlying image.
+    pub fn inner(&self) -> &I {
+        &self.image
+    }
+
+    /// Returns a mutable reference to the underlying image.
+    pub fn inner_mut(&mut self) -> &mut I {
+        &mut self.image
+    }   
 }
 
 #[allow(deprecated)]
@@ -979,7 +976,6 @@ where
     I::Target: GenericImageView + Sized,
 {
     type Pixel = DerefPixel<I>;
-    type InnerImageView = I::Target;
 
     fn dimensions(&self) -> (u32, u32) {
         (self.xstride, self.ystride)
@@ -993,14 +989,10 @@ where
         self.image.get_pixel(x + self.xoffset, y + self.yoffset)
     }
 
-    fn view(&self, x: u32, y: u32, width: u32, height: u32) -> SubImage<&Self::InnerImageView> {
+    fn view(&self, x: u32, y: u32, width: u32, height: u32) -> SubImage<&Self> {
         let x = self.xoffset + x;
         let y = self.yoffset + y;
-        SubImage::new(self.inner(), x, y, width, height)
-    }
-
-    fn inner(&self) -> &Self::InnerImageView {
-        &self.image
+        SubImage::new(self, x, y, width, height)
     }
 }
 
@@ -1010,8 +1002,6 @@ where
     I: DerefMut,
     I::Target: GenericImage + Sized,
 {
-    type InnerImage = I::Target;
-
     fn get_pixel_mut(&mut self, x: u32, y: u32) -> &mut Self::Pixel {
         self.image.get_pixel_mut(x + self.xoffset, y + self.yoffset)
     }
@@ -1033,14 +1023,10 @@ where
         y: u32,
         width: u32,
         height: u32,
-    ) -> SubImage<&mut Self::InnerImage> {
+    ) -> SubImage<&mut Self> {
         let x = self.xoffset + x;
         let y = self.yoffset + y;
-        SubImage::new(self.inner_mut(), x, y, width, height)
-    }
-
-    fn inner_mut(&mut self) -> &mut Self::InnerImage {
-        &mut self.image
+        SubImage::new(self, x, y, width, height)
     }
 }
 

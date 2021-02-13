@@ -1314,9 +1314,6 @@ impl<Buffer, P: Pixel> GenericImageView for View<Buffer, P>
 {
     type Pixel = P;
 
-    // We don't proxy an inner image.
-    type InnerImageView = Self;
-
     fn dimensions(&self) -> (u32, u32) {
         (self.inner.layout.width, self.inner.layout.height)
     }
@@ -1347,10 +1344,6 @@ impl<Buffer, P: Pixel> GenericImageView for View<Buffer, P>
         });
 
         *P::from_slice(&buffer[..channels])
-    }
-
-    fn inner(&self) -> &Self {
-        self // There is no other inner image.
     }
 }
 
@@ -1359,9 +1352,6 @@ impl<Buffer, P: Pixel> GenericImageView for ViewMut<Buffer, P>
 {
     type Pixel = P;
 
-    // We don't proxy an inner image.
-    type InnerImageView = Self;
-
     fn dimensions(&self) -> (u32, u32) {
         (self.inner.layout.width, self.inner.layout.height)
     }
@@ -1393,17 +1383,11 @@ impl<Buffer, P: Pixel> GenericImageView for ViewMut<Buffer, P>
 
         *P::from_slice(&buffer[..channels])
     }
-
-    fn inner(&self) -> &Self {
-        self // There is no other inner image.
-    }
 }
 
 impl<Buffer, P: Pixel> GenericImage for ViewMut<Buffer, P>
     where Buffer: AsMut<[P::Subpixel]> + AsRef<[P::Subpixel]>,
 {
-    type InnerImage = Self;
-
     fn get_pixel_mut(&mut self, x: u32, y: u32) -> &mut Self::Pixel {
         if !self.inner.in_bounds(0, x, y) {
             panic_pixel_out_of_bounds((x, y), self.dimensions())
@@ -1421,10 +1405,6 @@ impl<Buffer, P: Pixel> GenericImage for ViewMut<Buffer, P>
 
     fn blend_pixel(&mut self, x: u32, y: u32, pixel: Self::Pixel) {
         self.get_pixel_mut(x, y).blend(&pixel);
-    }
-
-    fn inner_mut(&mut self) -> &mut Self {
-        self
     }
 }
 
