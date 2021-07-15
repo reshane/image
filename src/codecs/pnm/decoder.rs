@@ -679,7 +679,7 @@ impl Sample for U8 {
         height: u32,
         samples: u32,
     ) -> ImageResult<Vec<u8>> {
-        (0..width*height*samples)
+        (0..u64::from(width)*u64::from(height)*u64::from(samples))
             .map(|_| read_separated_ascii(reader))
             .collect()
     }
@@ -1245,5 +1245,10 @@ ENDHDR
 \xde\xad\xbe\xef\xde\xad\xbe\xef\xde\xad\xbe\xef";
         
         assert!(PnmDecoder::new(&pamdata[..]).is_err());
+    }
+
+    #[test]
+    fn issue_1508() {
+        let _ = crate::load_from_memory(b"P391919 16999 1 1 9 919 16999 1 9999 999* 99999 N");
     }
 }
