@@ -227,6 +227,7 @@ pub mod codecs {
     #[cfg(feature = "dds")]
     pub mod dds;
     #[cfg(feature = "dxt")]
+    #[deprecated = "DXT support will be removed in a future version. Consider using an external crate instead."]
     pub mod dxt;
     #[cfg(feature = "farbfeld")]
     pub mod farbfeld;
