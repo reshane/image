@@ -14,7 +14,7 @@ use crate::error::{
 };
 use crate::math::Rect;
 use crate::traits::Pixel;
-use crate::ImageBuffer;
+use crate::{EncodableLayout, ImageBuffer, PixelWithColorType};
 
 use crate::animation::Frames;
 
@@ -826,6 +826,24 @@ pub trait ImageEncoder {
         height: u32,
         color_type: ColorType,
     ) -> ImageResult<()>;
+
+    /// Write an image buffer to the encoder.
+    fn write_image_buffer<P: PixelWithColorType, Container>(
+        self,
+        image: &ImageBuffer<P, Container>,
+    ) -> ImageResult<()>
+    where
+        [P::Subpixel]: EncodableLayout,
+        Container: Deref<Target = [P::Subpixel]>,
+        Self: Sized,
+    {
+        self.write_image(
+            image.as_raw().as_bytes(),
+            image.dimensions().0,
+            image.dimensions().1,
+            P::COLOR_TYPE,
+        )
+    }
 }
 
 /// Immutable pixel iterator
