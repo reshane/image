@@ -76,6 +76,9 @@ pub enum ImageFormat {
 
     /// An Image in WBMP Format
     Wbmp,
+
+    /// An Image in OTB format
+    Otb,
 }
 
 impl ImageFormat {
@@ -116,6 +119,7 @@ impl ImageFormat {
                 "qoi" => ImageFormat::Qoi,
                 "pcx" => ImageFormat::Pcx,
                 "wbmp" => ImageFormat::Wbmp,
+                "otb" => ImageFormat::Otb,
                 _ => return None,
             })
         }
@@ -242,6 +246,7 @@ impl ImageFormat {
             ImageFormat::Farbfeld => "application/octet-stream",
             ImageFormat::Pcx => "image/vnd.zbrush.pcx",
             ImageFormat::Wbmp => "image/vnd.wap.wbmp",
+            ImageFormat::Otb => "image/bmp",
         }
     }
 
@@ -268,6 +273,7 @@ impl ImageFormat {
             ImageFormat::Qoi => true,
             ImageFormat::Pcx => true,
             ImageFormat::Wbmp => true,
+            ImageFormat::Otb => true,
         }
     }
 
@@ -294,6 +300,7 @@ impl ImageFormat {
             ImageFormat::Qoi => true,
             ImageFormat::Pcx => false,
             ImageFormat::Wbmp => true,
+            ImageFormat::Otb => true,
         }
     }
 
@@ -327,6 +334,7 @@ impl ImageFormat {
             ImageFormat::Qoi => &["qoi"],
             ImageFormat::Pcx => &["pcx"],
             ImageFormat::Wbmp => &["wbmp"],
+            ImageFormat::Otb => &["otb"],
         }
     }
 
@@ -351,6 +359,7 @@ impl ImageFormat {
             ImageFormat::Qoi => cfg!(feature = "qoi"),
             ImageFormat::Pcx => cfg!(feature = "pcx"),
             ImageFormat::Wbmp => cfg!(feature = "wbmp"),
+            ImageFormat::Otb => cfg!(feature = "otb"),
             ImageFormat::Dds => false,
         }
     }
@@ -375,6 +384,7 @@ impl ImageFormat {
             ImageFormat::Qoi => cfg!(feature = "qoi"),
             ImageFormat::Hdr => cfg!(feature = "hdr"),
             ImageFormat::Wbmp => cfg!(feature = "wbmp"),
+            ImageFormat::Otb => cfg!(feature = "otb"),
             ImageFormat::Pcx => false,
             ImageFormat::Dds => false,
         }
@@ -400,6 +410,7 @@ impl ImageFormat {
             ImageFormat::Hdr,
             ImageFormat::Pcx,
             ImageFormat::Wbmp,
+            ImageFormat::Otb,
         ]
         .iter()
         .copied()
