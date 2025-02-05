@@ -228,6 +228,7 @@ pub mod flat;
 /// | TGA      | Yes                                       | Yes                                     |
 /// | TIFF     | Yes                                       | Yes                                     |
 /// | WebP     | Yes                                       | Yes (lossless only)                     |
+/// | Wbmp     | Yes                                       | Yes                                     |
 ///
 /// - \* Requires the `avif-native` feature, uses the libdav1d C library.
 ///

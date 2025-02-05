@@ -73,6 +73,9 @@ pub enum ImageFormat {
 
     /// An Image in PCX Format
     Pcx,
+
+    /// An Image in WBMP Format
+    Wbmp,
 }
 
 impl ImageFormat {
@@ -112,6 +115,7 @@ impl ImageFormat {
                 "ff" => ImageFormat::Farbfeld,
                 "qoi" => ImageFormat::Qoi,
                 "pcx" => ImageFormat::Pcx,
+                "wbmp" => ImageFormat::Wbmp,
                 _ => return None,
             })
         }
@@ -188,6 +192,7 @@ impl ImageFormat {
             // See: https://github.com/phoboslab/qoi/issues/167
             "image/x-qoi" => Some(ImageFormat::Qoi),
             "image/vnd.zbrush.pcx" | "image/x-pcx" => Some(ImageFormat::Pcx),
+            "image/vnd.wap.wbmp" => Some(ImageFormat::Wbmp),
             _ => None,
         }
     }
@@ -236,6 +241,7 @@ impl ImageFormat {
             // farbfeld's MIME type taken from https://www.wikidata.org/wiki/Q28206109
             ImageFormat::Farbfeld => "application/octet-stream",
             ImageFormat::Pcx => "image/vnd.zbrush.pcx",
+            ImageFormat::Wbmp => "image/vnd.wap.wbmp",
         }
     }
 
@@ -261,6 +267,7 @@ impl ImageFormat {
             ImageFormat::Avif => true,
             ImageFormat::Qoi => true,
             ImageFormat::Pcx => true,
+            ImageFormat::Wbmp => true,
         }
     }
 
@@ -286,6 +293,7 @@ impl ImageFormat {
             ImageFormat::Dds => false,
             ImageFormat::Qoi => true,
             ImageFormat::Pcx => false,
+            ImageFormat::Wbmp => true,
         }
     }
 
@@ -318,6 +326,7 @@ impl ImageFormat {
             ImageFormat::Avif => &["avif"],
             ImageFormat::Qoi => &["qoi"],
             ImageFormat::Pcx => &["pcx"],
+            ImageFormat::Wbmp => &["wbmp"],
         }
     }
 
@@ -341,6 +350,7 @@ impl ImageFormat {
             ImageFormat::Avif => cfg!(feature = "avif"),
             ImageFormat::Qoi => cfg!(feature = "qoi"),
             ImageFormat::Pcx => cfg!(feature = "pcx"),
+            ImageFormat::Wbmp => cfg!(feature = "wbmp"),
             ImageFormat::Dds => false,
         }
     }
@@ -364,6 +374,7 @@ impl ImageFormat {
             ImageFormat::OpenExr => cfg!(feature = "exr"),
             ImageFormat::Qoi => cfg!(feature = "qoi"),
             ImageFormat::Hdr => cfg!(feature = "hdr"),
+            ImageFormat::Wbmp => cfg!(feature = "wbmp"),
             ImageFormat::Pcx => false,
             ImageFormat::Dds => false,
         }
@@ -388,6 +399,7 @@ impl ImageFormat {
             ImageFormat::Dds,
             ImageFormat::Hdr,
             ImageFormat::Pcx,
+            ImageFormat::Wbmp,
         ]
         .iter()
         .copied()
