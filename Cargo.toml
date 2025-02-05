@@ -86,6 +86,7 @@ qoi = ["dep:qoi"]
 tga = []
 tiff = ["dep:tiff"]
 webp = ["dep:image-webp"]
+wbmp = []
 
 # Other features
 rayon = ["dep:rayon", "ravif?/threading"] # Enables multi-threading
